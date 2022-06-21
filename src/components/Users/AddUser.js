@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import Card from '../UI/Card';
 import Button from '../UI/Button';
+import ErrorModal from  '../UI/ErrorModal'
 import styles from './AddUser.module.css'
 
 const AddUser = (props) => {
@@ -17,16 +18,30 @@ const AddUser = (props) => {
     // Initializes the enteredAge state as a blank string
     const [enteredAge, setEnteredAge] = useState('');
 
+    // Used to alter the error modals state
+    const [error, setError] = useState();
+
     // Used on the form element, Prevents the request being sent on form submission.
     const addUserHandler = (event) => {
         event.preventDefault();
-        // If once either field is trimmed and the length is 0, function execution is broken with return.
+        // If once either field is trimmed and the length is 0, 
+        // setError is called and the error object set, error is then deemed true and displayed in the JSX code.
+        // Return is then called to prevent further function execution.
         if (enteredUsername.trim().length === 0 || enteredAge.trim().length === 0) {
+            setError({
+                title: 'Invalid input',
+                message: 'Please enter a valid name and age (no empty values).'
+            });
             return;
         }
-        // If age value is less than 1 function execution is broken with return. 
-        // String to integer conversion forced with '+'
+        // If age value is less than 1, setError is called and the error object set
+        // error is then deemed true and displayed in the JSX code. 
+        // function execution is then broken with return.  String to integer conversion forced with '+'
         if (+enteredAge < 1) {
+            setError({
+                title: 'Invalid input',
+                message: 'Please enter a valid age (older than 0).'
+            });
             return;
         }
         // Calls the addUserHandler function found in Apps.js
@@ -49,16 +64,25 @@ const AddUser = (props) => {
         setEnteredAge(event.target.value)
     }
 
+    // A function to clear the 'error' state, deem it false.
+    // Passed as a prop through onConfirm to the ErrorModal.js file.
+    const errorHandler = () => {
+        setError(null);
+    };
+
     return (
-        <Card className={styles.input}>
-            <form onSubmit={addUserHandler}>
-                <label htmlFor='username'>Username</label>
-                <input id='username' type='text' value={enteredUsername} onChange={usernameChangeHandler}/>
-                <label htmlFor='age'>Age (Years)</label>
-                <input id='age' type='number' value={enteredAge} onChange={ageChangeHandler}/>
-                <Button type='submit'>Add User</Button>
-            </form>
-        </Card>
+        <div>
+            {error && <ErrorModal title={error.title} message={error.message} onConfirm={errorHandler}/>}
+            <Card className={styles.input}>
+                <form onSubmit={addUserHandler}>
+                    <label htmlFor='username'>Username</label>
+                    <input id='username' type='text' value={enteredUsername} onChange={usernameChangeHandler}/>
+                    <label htmlFor='age'>Age (Years)</label>
+                    <input id='age' type='number' value={enteredAge} onChange={ageChangeHandler}/>
+                    <Button type='submit'>Add User</Button>
+                </form>
+            </Card>
+        </div>
     );
 };
 
