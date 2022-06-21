@@ -29,8 +29,10 @@ const AddUser = (props) => {
         if (+enteredAge < 1) {
             return;
         }
-        // Logs the username and age before resetting the state to an empty string
-        console.log(enteredUsername, enteredAge);
+        // Calls the addUserHandler function found in Apps.js
+        // Forwards the data used for the username and age fields.
+        props.onAddUser(enteredUsername, enteredAge);
+        // Resets the input fields
         setEnteredUsername('');
         setEnteredAge('');
     };
